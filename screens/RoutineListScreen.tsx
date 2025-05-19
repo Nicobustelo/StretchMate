@@ -23,31 +23,28 @@ export default function RoutineListScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = ({ item }: { item: Routine }) => (
-         <View style={styles.routineItem}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.routineName}>{item.name}</Text>
-              <Text>{item.sets} sets – {item.workTime}s trabajo / {item.restTime}s descanso</Text>
-            </View>
-            <View style={styles.actions}>
-              <TouchableOpacity onPress={() => handleEdit(item)} style={styles.editBtn}>
-                <Text>✏️</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
-                <Text>🗑️</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.item}
-                onPress={() => navigation.navigate("Timer", { routineId: item.id })}
-                >
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.info}>
-                    {item.sets} sets · {item.workTime}s trabajo · {item.restTime}s descanso
-                </Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-  );
+const renderItem = ({ item }: { item: Routine }) => (
+  <TouchableOpacity
+    style={styles.routineItem}
+    onPress={() => navigation.navigate("Timer", { routineId: item.id })}
+    activeOpacity={0.8}
+  >
+    <View style={{ flex: 1 }}>
+      <Text style={styles.routineName}>{item.name}</Text>
+      <Text style={styles.info}>
+        {item.sets} sets · {item.workTime}s trabajo · {item.restTime}s descanso
+      </Text>
+    </View>
+    <View style={styles.actions}>
+      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.iconBtn}>
+        <Text>✏️</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.iconBtn}>
+        <Text>🗑️</Text>
+      </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
+);
 
   const handleDelete = (id: string) => {
     Alert.alert("Eliminar rutina", "¿Estás seguro de eliminar esta rutina?", [
@@ -83,35 +80,29 @@ export default function RoutineListScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: { padding: 20 },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  item: {
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  name: { fontSize: 18, fontWeight: "bold" },
-  info: { fontSize: 14, color: "#666" },
   routineItem: {
     backgroundColor: "#f0f0f0",
     padding: 15,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 8, // Menor separación
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   routineName: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 4,
   },
+  info: { fontSize: 14, color: "#666" },
   actions: {
     flexDirection: "row",
-    gap: 10,
+    alignItems: "center",
+    gap: 8,
   },
-  editBtn: {
-    marginLeft: 10,
-  },
-  deleteBtn: {
-    marginLeft: 10,
+  iconBtn: {
+    marginLeft: 8,
+    padding: 6,
+    borderRadius: 6,
   },
 });

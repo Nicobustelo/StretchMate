@@ -37,10 +37,21 @@ export default function CreateRoutineScreen({ navigation }: Props) {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear nueva rutina</Text>
 
+      <Text style={{ marginBottom: 10, color: "#555" }}>
+        Ingrese los datos para su nueva rutina: nombre, tiempos de preparación, trabajo, descanso y cantidad de sets.
+      </Text>
+      <Text style={{ marginBottom: 4 }}>Nombre de la rutina:</Text>
+      <Text style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>
+        Ejemplo: "Rutina de estiramiento matutino"
+      </Text>
       <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
+      <Text style={{ marginBottom: 4 }}>Tiempo de preparación:</Text>
       <TextInput style={styles.input} placeholder="Tiempo de preparación (segundos)" keyboardType="numeric" value={preparationTime} onChangeText={setPreparationTime} />
+      <Text style={{ marginBottom: 4 }}>Duración de cada set:</Text>
       <TextInput style={styles.input} placeholder="Duración de cada set (segundos)" keyboardType="numeric" value={workTime} onChangeText={setWorkTime} />
+      <Text style={{ marginBottom: 4 }}>Descanso entre sets:</Text>
       <TextInput style={styles.input} placeholder="Descanso entre sets (segundos)" keyboardType="numeric" value={restTime} onChangeText={setRestTime} />
+      <Text style={{ marginBottom: 4 }}>Cantidad de sets:</Text>
       <TextInput style={styles.input} placeholder="Cantidad de sets" keyboardType="numeric" value={sets} onChangeText={setSets} />
 
       <Button title="Guardar rutina" onPress={handleSave} />

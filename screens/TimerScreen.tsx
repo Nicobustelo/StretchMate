@@ -1,7 +1,8 @@
 // screens/TimerScreen.tsx
 
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, Button, StyleSheet, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppState, View, Text, Button, StyleSheet, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { getRoutineById, logRoutineUsage } from "../services/routineService";
@@ -18,6 +19,7 @@ export default function TimerScreen({ route, navigation }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -45,6 +47,42 @@ export default function TimerScreen({ route, navigation }: Props) {
 
     return () => clearInterval(intervalRef.current as NodeJS.Timeout);
   }, [isRunning, timeLeft]);
+
+    // Guardar tiempo de finalización al pausar/salir
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
+      if (appState.match(/active/) && nextAppState.match(/inactive|background/)) {
+        if (isRunning && timeLeft > 0) {
+          const endTime = Date.now() + timeLeft * 1000;
+          await AsyncStorage.setItem("timerEndTime", endTime.toString());
+          await AsyncStorage.setItem("timerStep", currentStep.toString());
+        }
+      }
+      setAppState(nextAppState);
+    });
+    return () => subscription.remove();
+  }, [isRunning, timeLeft, currentStep, appState]);
+
+  // Al volver a la app, restaurar el tiempo restante
+  useEffect(() => {
+    const restoreTimer = async () => {
+      const endTimeStr = await AsyncStorage.getItem("timerEndTime");
+      const stepStr = await AsyncStorage.getItem("timerStep");
+      if (endTimeStr && stepStr) {
+        const endTime = parseInt(endTimeStr, 10);
+        const now = Date.now();
+        const remaining = Math.max(0, Math.round((endTime - now) / 1000));
+        setCurrentStep(Number(stepStr));
+        setTimeLeft(remaining);
+        setIsRunning(remaining > 0);
+        await AsyncStorage.removeItem("timerEndTime");
+        await AsyncStorage.removeItem("timerStep");
+      }
+    };
+    if (appState === "active") {
+      restoreTimer();
+    }
+  }, [appState]);
 
   const goToNextStep = () => {
     clearInterval(intervalRef.current as NodeJS.Timeout);

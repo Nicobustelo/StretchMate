@@ -1,6 +1,8 @@
 // App.tsx
 import React from "react";
 import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AppNavigator from "./navigation/AppNavigator";
 // import { useEffect } from "react";
 // import * as Notifications from "expo-notifications";
@@ -12,10 +14,18 @@ import AppNavigator from "./navigation/AppNavigator";
 
 export default function App() {
   return (
-    <>
-      <StatusBar style="auto" />
-      <AppNavigator />
-    </>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <StatusBar style="auto" />
+        <AppNavigator />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-// This is the main entry point of the application. It imports the AppNavigator component and renders it within a React fragment. The StatusBar component is also included to manage the status bar appearance.
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+});
