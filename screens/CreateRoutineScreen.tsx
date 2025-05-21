@@ -1,32 +1,49 @@
 // screens/CreateRoutineScreen.tsx
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from "react-native";
-import { saveRoutine } from "../services/routineService";
+import { saveRoutine, updateRoutine } from "../services/routineService";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateRoutine">;
 
-export default function CreateRoutineScreen({ navigation }: Props) {
-  const [name, setName] = useState("");
-  const [preparationTime, setPreparationTime] = useState("5");
-  const [workTime, setWorkTime] = useState("30");
-  const [restTime, setRestTime] = useState("15");
-  const [sets, setSets] = useState("5");
+export default function CreateRoutineScreen({ navigation, route }: Props) {
+  // Recibe la rutina si viene como parámetro
+  const editingRoutine = route.params?.routine;
+
+  // Inicializa el estado con los datos de la rutina si existe
+  const [name, setName] = useState(editingRoutine?.name || "");
+  const [preparationTime, setPreparationTime] = useState(editingRoutine?.preparationTime?.toString() || "");
+  const [workTime, setWorkTime] = useState(editingRoutine?.workTime?.toString() || "");
+  const [restTime, setRestTime] = useState(editingRoutine?.restTime?.toString() || "");
+  const [sets, setSets] = useState(editingRoutine?.sets?.toString() || "");
 
   const handleSave = async () => {
     if (!name.trim()) return Alert.alert("Falta nombre");
 
     try {
-      const routine = await saveRoutine({
-        name: name.trim(),
-        preparationTime: parseInt(preparationTime),
-        workTime: parseInt(workTime),
-        restTime: parseInt(restTime),
-        sets: parseInt(sets),
-      });
-
-      Alert.alert("✅ Rutina guardada", `Nombre: ${routine.name}`);
+      if (editingRoutine) {
+        // Si estamos editando, actualizamos la rutina existente
+        await updateRoutine({
+          ...editingRoutine,
+          name: name.trim(),
+          preparationTime: parseInt(preparationTime),
+          workTime: parseInt(workTime),
+          restTime: parseInt(restTime),
+          sets: parseInt(sets),
+        });
+        Alert.alert("✅ Rutina actualizada", `Nombre: ${name.trim()}`);
+      } else {
+        // Si no, creamos una nueva
+        const routine = await saveRoutine({
+          name: name.trim(),
+          preparationTime: parseInt(preparationTime),
+          workTime: parseInt(workTime),
+          restTime: parseInt(restTime),
+          sets: parseInt(sets),
+        });
+        Alert.alert("✅ Rutina guardada", `Nombre: ${routine.name}`);
+      }
       navigation.navigate("Home");
     } catch (error: any) {
       Alert.alert("Error al guardar rutina", error?.message || "Ocurrió un error inesperado.");
