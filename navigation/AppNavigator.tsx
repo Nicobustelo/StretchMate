@@ -27,13 +27,13 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="CreateRoutine" component={CreateRoutineScreen} />
-        <Stack.Screen name="RoutineList" component={RoutineListScreen} options={{ title: "Rutinas" }} />
-        <Stack.Screen name="Timer" component={TimerScreen} options={{ title: "Rutina" }} />
-        <Stack.Screen name="Routine" component={RoutineScreen} />
-        <Stack.Screen name="History" component={HistoryScreen} options={{ title: "Ver Historial" }}/>
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="CreateRoutine" component={CreateRoutineScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="RoutineList" component={RoutineListScreen} options={{ title: "Rutinas", headerShown: false }} />
+        <Stack.Screen name="Timer" component={TimerScreen} options={{ title: "Rutina", headerShown: false }} />
+        <Stack.Screen name="Routine" component={RoutineScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="History" component={HistoryScreen} options={{ title: "Ver Historial", headerShown: false }}/>
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
