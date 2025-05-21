@@ -1,12 +1,19 @@
-// screens/RoutineListScreen.tsx
-
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Button, Alert, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getAllRoutines, deleteRoutine } from "../services/routineService";
 import { Routine } from "../types/Routine";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<RootStackParamList, "RoutineList">;
 
@@ -23,29 +30,6 @@ export default function RoutineListScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
-const renderItem = ({ item }: { item: Routine }) => (
-  <TouchableOpacity
-    style={styles.routineItem}
-    onPress={() => navigation.navigate("Timer", { routineId: item.id })}
-    activeOpacity={0.8}
-  >
-    <View style={{ flex: 1 }}>
-      <Text style={styles.routineName}>{item.name}</Text>
-      <Text style={styles.info}>
-        {item.sets} sets · {item.workTime}s trabajo · {item.restTime}s descanso
-      </Text>
-    </View>
-    <View style={styles.actions}>
-      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.iconBtn}>
-        <Text>✏️</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.iconBtn}>
-        <Text>🗑️</Text>
-      </TouchableOpacity>
-    </View>
-  </TouchableOpacity>
-);
-
   const handleDelete = (id: string) => {
     Alert.alert("Eliminar rutina", "¿Estás seguro de eliminar esta rutina?", [
       { text: "Cancelar", style: "cancel" },
@@ -61,48 +45,119 @@ const renderItem = ({ item }: { item: Routine }) => (
   };
 
   const handleEdit = (routine: Routine) => {
-    navigation.navigate("CreateRoutine", { routine }); // Le pasamos la rutina a editar
+    navigation.navigate("CreateRoutine", { routine });
   };
 
+  const renderItem = ({ item }: { item: Routine }) => (
+    <View style={styles.card}>
+      <View style={styles.cardContent}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardInfo}>
+            {item.sets} sets · {item.workTime}s trabajo · {item.restTime}s descanso
+          </Text>
+        </View>
+        <View style={styles.cardActions}>
+          <TouchableOpacity onPress={() => navigation.navigate("Timer", { routineId: item.id })}>
+            <Ionicons name="play-circle-outline" size={28} color="#0EA5E9" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleEdit(item)}>
+            <Ionicons name="create-outline" size={24} color="#6B7280" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDelete(item.id)}>
+            <Ionicons name="trash-outline" size={24} color="#EF4444" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tus rutinas</Text>
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#1F2937" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Rutinas</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("CreateRoutine")}>
+          <Ionicons name="add-circle-outline" size={28} color="#0EA5E9" />
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={routines}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ListEmptyComponent={<Text>No hay rutinas guardadas.</Text>}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={<Text style={styles.emptyText}>No hay rutinas guardadas.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  routineItem: {
-    backgroundColor: "#f0f0f0",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 8, // Menor separación
+  screen: {
+    flex: 1,
+    backgroundColor: "#F0F9FF",
+  },
+  header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 3,
   },
-  routineName: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1F2937",
+  },
+  listContent: {
+    padding: 16,
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 4,
+    color: "#111827",
+    marginBottom: 6,
   },
-  info: { fontSize: 14, color: "#666" },
-  actions: {
+  cardInfo: {
+    fontSize: 14,
+    color: "#6B7280",
+  },
+  cardActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 12,
   },
-  iconBtn: {
-    marginLeft: 8,
-    padding: 6,
-    borderRadius: 6,
+  emptyText: {
+    textAlign: "center",
+    color: "#6B7280",
+    marginTop: 40,
+    fontSize: 16,
   },
 });
