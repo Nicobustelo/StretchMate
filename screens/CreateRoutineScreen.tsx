@@ -1,6 +1,14 @@
-// screens/CreateRoutineScreen.tsx
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { saveRoutine, updateRoutine } from "../services/routineService";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -8,10 +16,8 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 type Props = NativeStackScreenProps<RootStackParamList, "CreateRoutine">;
 
 export default function CreateRoutineScreen({ navigation, route }: Props) {
-  // Recibe la rutina si viene como parámetro
   const editingRoutine = route.params?.routine;
 
-  // Inicializa el estado con los datos de la rutina si existe
   const [name, setName] = useState(editingRoutine?.name || "");
   const [preparationTime, setPreparationTime] = useState(editingRoutine?.preparationTime?.toString() || "");
   const [workTime, setWorkTime] = useState(editingRoutine?.workTime?.toString() || "");
@@ -23,7 +29,6 @@ export default function CreateRoutineScreen({ navigation, route }: Props) {
 
     try {
       if (editingRoutine) {
-        // Si estamos editando, actualizamos la rutina existente
         await updateRoutine({
           ...editingRoutine,
           name: name.trim(),
@@ -34,7 +39,6 @@ export default function CreateRoutineScreen({ navigation, route }: Props) {
         });
         Alert.alert("✅ Rutina actualizada", `Nombre: ${name.trim()}`);
       } else {
-        // Si no, creamos una nueva
         const routine = await saveRoutine({
           name: name.trim(),
           preparationTime: parseInt(preparationTime),
@@ -51,39 +55,157 @@ export default function CreateRoutineScreen({ navigation, route }: Props) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear nueva rutina</Text>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>
+          {editingRoutine ? "Editar Rutina" : "Crear Rutina"}
+        </Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="x" size={24} color="#555" />
+        </TouchableOpacity>
+      </View>
 
-      <Text style={{ marginBottom: 10, color: "#555" }}>
-        Ingrese los datos para su nueva rutina: nombre, tiempos de preparación, trabajo, descanso y cantidad de sets.
-      </Text>
-      <Text style={{ marginBottom: 4 }}>Nombre de la rutina:</Text>
-      <Text style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>
-        Ejemplo: "Rutina de estiramiento matutino"
-      </Text>
-      <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-      <Text style={{ marginBottom: 4 }}>Tiempo de preparación:</Text>
-      <TextInput style={styles.input} placeholder="Tiempo de preparación (segundos)" keyboardType="numeric" value={preparationTime} onChangeText={setPreparationTime} />
-      <Text style={{ marginBottom: 4 }}>Duración de cada set:</Text>
-      <TextInput style={styles.input} placeholder="Duración de cada set (segundos)" keyboardType="numeric" value={workTime} onChangeText={setWorkTime} />
-      <Text style={{ marginBottom: 4 }}>Descanso entre sets:</Text>
-      <TextInput style={styles.input} placeholder="Descanso entre sets (segundos)" keyboardType="numeric" value={restTime} onChangeText={setRestTime} />
-      <Text style={{ marginBottom: 4 }}>Cantidad de sets:</Text>
-      <TextInput style={styles.input} placeholder="Cantidad de sets" keyboardType="numeric" value={sets} onChangeText={setSets} />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.sectionTitle}>
+          {editingRoutine ? "Modifica los datos de tu rutina:" : "Ingrese los datos para su nueva rutina:"}
+        </Text>
 
-      <Button title="Guardar rutina" onPress={handleSave} />
-    </ScrollView>
+        {/* Nombre */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nombre de la rutina</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Ej: "Rutina de estiramiento matutino"'
+            value={name}
+            onChangeText={setName}
+            placeholderTextColor="#94a3b8"
+          />
+        </View>
+
+        {/* Preparación */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Tiempo de preparación (segundos)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: 10"
+            keyboardType="numeric"
+            value={preparationTime}
+            onChangeText={setPreparationTime}
+            placeholderTextColor="#94a3b8"
+          />
+        </View>
+
+        {/* Trabajo */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Duración de cada set (segundos)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: 30"
+            keyboardType="numeric"
+            value={workTime}
+            onChangeText={setWorkTime}
+            placeholderTextColor="#94a3b8"
+          />
+        </View>
+
+        {/* Descanso */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Descanso entre sets (segundos)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: 15"
+            keyboardType="numeric"
+            value={restTime}
+            onChangeText={setRestTime}
+            placeholderTextColor="#94a3b8"
+          />
+        </View>
+
+        {/* Sets */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Cantidad de sets</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: 5"
+            keyboardType="numeric"
+            value={sets}
+            onChangeText={setSets}
+            placeholderTextColor="#94a3b8"
+          />
+        </View>
+
+        {/* Botón Guardar */}
+        <TouchableOpacity style={styles.primaryButton} onPress={handleSave}>
+          <Icon name="save" size={20} color="white" />
+          <Text style={styles.primaryButtonText}>
+            {editingRoutine ? "GUARDAR CAMBIOS" : "GUARDAR RUTINA"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
+  container: { flex: 1, backgroundColor: "#f0f9ff" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderColor: "#e0f2fe",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0284c7",
+  },
+  scrollContent: { padding: 16 },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1e293b",
+    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    elevation: 1,
+  },
+  label: {
+    color: "#0f172a",
+    fontWeight: "500",
+    marginBottom: 6,
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 12,
+    borderColor: "#e0f2fe",
+    borderRadius: 8,
     padding: 10,
-    borderRadius: 5,
+    color: "#0f172a",
+    backgroundColor: "#f8fafc",
+  },
+  primaryButton: {
+    flexDirection: "row",
+    backgroundColor: "#0284c7",
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  primaryButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
   },
 });

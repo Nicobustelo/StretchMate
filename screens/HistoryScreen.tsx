@@ -28,17 +28,17 @@ export default function HistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f0f9ff" }}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Ionicons name="arrow-back" size={24} color="#0284c7" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Historial de Rutinas</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {history.length === 0 ? (
-          <Text style={{ textAlign: "center", marginTop: 40 }}>No hiciste ninguna rutina aún</Text>
+          <Text style={styles.emptyText}>No hiciste ninguna rutina aún</Text>
         ) : (
           history.map((item) => (
             <View key={item.id} style={styles.card}>
@@ -51,7 +51,6 @@ export default function HistoryScreen() {
                   <Ionicons name="checkmark-done" size={14} color="#fff" />
                   <Text style={styles.badgeText}>Completada</Text>
                 </View>
-                {/* Podés agregar más badges como tipo o duración si lo registrás */}
               </View>
             </View>
           ))
@@ -66,9 +65,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
+    paddingTop: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderColor: "#e0f2fe",
     backgroundColor: "#fff",
   },
   backButton: {
@@ -76,33 +76,33 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: "bold",
+    color: "#0284c7",
   },
   scrollContainer: {
     padding: 16,
   },
   card: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    elevation: 2,
   },
   cardHeader: {
     marginBottom: 10,
   },
   routineName: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#222",
+    fontWeight: "600",
+    color: "#0f172a",
   },
   date: {
     fontSize: 14,
-    color: "#666",
+    color: "#64748b",
   },
   tagsContainer: {
     flexDirection: "row",
@@ -122,4 +122,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
   },
+  emptyText: {
+    color: "#94a3b8",
+    textAlign: "center",
+    marginTop: 40,
+    fontSize: 16,
+  },
 });
+// ...existing code...

@@ -95,7 +95,7 @@ export default function HomeScreen({ navigation }: Props) {
                 <View style={styles.routineInfo}>
                   <Text style={styles.routineName}>{routine.name}</Text>
                   <Text style={styles.routineMeta}>
-                    {routine.preparationTime + (routine.workTime + routine.restTime) * routine.sets} min •{" "}
+                    {Math.ceil((routine.preparationTime + (routine.workTime + routine.restTime) * routine.sets) / 60)} min •{" "}
                     {formatDistanceToNow(routine.lastUsed!, { locale: es, addSuffix: true })}
                   </Text>
                 </View>
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingTop: 50,
+    paddingTop: 12,
     paddingBottom: 12,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
