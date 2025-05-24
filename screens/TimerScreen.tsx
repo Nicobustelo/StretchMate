@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppState, View, Text, Button, StyleSheet, Alert } from "react-native";
+import { AppState, View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { getRoutineById, logRoutineUsage } from "../services/routineService";
 import { Routine } from "../types/Routine";
 import { generateRoutineSteps, RoutineStep } from "../utils/generateRoutineSteps";
+import Icon from "react-native-vector-icons/Feather";
 import * as Notifications from "expo-notifications";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Timer">;
@@ -136,27 +137,132 @@ export default function TimerScreen({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{step.label}</Text>
-      <Text style={styles.time}>{timeLeft}s</Text>
-
-      <View style={styles.controls}>
-        <Button title="⏪" onPress={goToPreviousStep} disabled={currentStep === 0} />
-        <Button title={isRunning ? "⏸️ Pausar" : "▶️ Reanudar"} onPress={togglePause} />
-        <Button title="⏩" onPress={goToNextStep} />
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{routine.name}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="x" size={24} color="#555" />
+        </TouchableOpacity>
       </View>
 
-      <Button title="Finalizar rutina" onPress={finishRoutine} color="red" />
+      {/* Card */}
+      <View style={styles.card}>
+        <Text style={styles.stepLabel}>{step.label}</Text>
+        <Text style={styles.time}>{timeLeft}s</Text>
+
+        {/* Controles */}
+        <View style={styles.controls}>
+          <TouchableOpacity
+            style={[styles.controlBtn, currentStep === 0 && styles.disabledBtn]}
+            onPress={goToPreviousStep}
+            disabled={currentStep === 0}
+          >
+            <Icon name="rewind" size={24} color={currentStep === 0 ? "#94a3b8" : "#0284c7"} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.controlBtn}
+            onPress={togglePause}
+          >
+            <Icon name={isRunning ? "pause" : "play"} size={24} color="#0284c7" />
+            <Text style={styles.controlBtnText}>{isRunning ? "Pausar" : "Reanudar"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.controlBtn}
+            onPress={goToNextStep}
+          >
+            <Icon name="fast-forward" size={24} color="#0284c7" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Botón finalizar */}
+      <TouchableOpacity style={styles.finishBtn} onPress={finishRoutine}>
+        <Icon name="flag" size={20} color="white" />
+        <Text style={styles.finishBtnText}>Finalizar rutina</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
+// Nuevo estilo inspirado en HomeScreen y CreateRoutineScreen
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20 },
-  label: { fontSize: 28, fontWeight: "bold", marginBottom: 10 },
-  time: { fontSize: 64, fontWeight: "bold", marginBottom: 30 },
+  container: { flex: 1, backgroundColor: "#f0f9ff" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderColor: "#e0f2fe",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0284c7",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    margin: 24,
+    alignItems: "center",
+    elevation: 2,
+  },
+  stepLabel: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#1e293b",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  time: {
+    fontSize: 64,
+    fontWeight: "bold",
+    color: "#0284c7",
+    marginBottom: 24,
+  },
   controls: {
     flexDirection: "row",
-    gap: 10,
-    marginBottom: 30,
+    justifyContent: "center",
+    gap: 16,
+    marginBottom: 8,
+  },
+  controlBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0f2fe",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+    marginHorizontal: 4,
+  },
+  controlBtnText: {
+    marginLeft: 8,
+    color: "#0284c7",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  disabledBtn: {
+    opacity: 0.5,
+  },
+  finishBtn: {
+    flexDirection: "row",
+    backgroundColor: "#ef4444",
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginHorizontal: 24,
+    marginTop: 16,
+  },
+  finishBtnText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
+    marginLeft: 8,
   },
 });
